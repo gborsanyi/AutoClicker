@@ -46,20 +46,21 @@ def create_edit_window():
         wait_spinbox.delete(0, tk.END)
         textbox.delete(tk.END, tk.END)
 
-        check_box_left_click.set(0)
-        check_box_double_click.set(0)
-        check_box_h_mouse_movement.set(0)
+        ew_check_box_left_click.set(False)
+        ew_check_box_double_click.set(False)
+        ew_check_box_h_mouse_movement.set(False)
 
-
-        print(values[5], lambda x: 1 if values[5] == "Off" else 0)
-        combo.insert(0, values[1])
+        print(values[1], type(values[1]))
         x_pos_spinbox.insert(0, values[2])
         y_pos_spinbox.insert(0, values[3])
-        textbox.insert(tk.END, values[7])
+        combo.insert(0, values[1])
+        textbox.insert(1.0, values[7])
         wait_spinbox.insert(0, values[8])
-        check_box_left_click.set(lambda x: 1 if values[5] == "Off" else 0)
-        check_box_double_click.set(0)
-        check_box_h_mouse_movement.set(0)
+
+        ew_check_box_left_click.set(True if values[4] == "On" else False)
+        ew_check_box_double_click.set(True if values[5] == "On" else False)
+        ew_check_box_h_mouse_movement.set(True if values[6] == "On" else False)
+
 
 
     def update_record():
@@ -78,11 +79,12 @@ def create_edit_window():
     save_values_button.grid(row=10, column=1, pady=(40, 0))
 
     ttk.Label(extra_window, text="Click/Text ").grid(column=0, row=0, pady=(30, 5))
-    items = ('C', 'T')
-    food_string = tk.StringVar(value=items[0])
-    combo = ttk.Combobox(extra_window, textvariable=food_string)
+    # items = ('C', 'T')
+    # ew_combobox_value = tk.StringVar(value=items[0])
+    combo = ttk.Combobox(extra_window, textvariable=ew_combobox_value)
     combo['values'] = items
     combo.grid(column=1, row=0, pady=(30, 5))
+
 
     ttk.Label(extra_window, text="X position: ").grid(column=0, row=1, padx=(10, 10), pady=(0, 5))
     ttk.Label(extra_window, text="Y position: ").grid(column=0, row=2, padx=(10, 10), pady=0)
@@ -96,17 +98,17 @@ def create_edit_window():
     ttk.Label(extra_window, text="Double click ").grid(column=0, row=4, pady=(2, 5))
     ttk.Label(extra_window, text="Human-like mouse move ").grid(column=0, row=5, pady=(2, 5))
 
-    check_box_left_click = tkinter.IntVar()
-    check_box_left_click_checkbox = ttk.Checkbutton(extra_window, variable=check_box_left_click,onvalue=1, offvalue=0)
-    check_box_left_click_checkbox.grid(column=1, row=3, padx=(30, 10), pady=(2, 5))
 
-    check_box_double_click = tkinter.IntVar()
-    check_box_double_click_checkbox = ttk.Checkbutton(extra_window, variable=check_box_double_click,onvalue=1, offvalue=0)
-    check_box_double_click_checkbox.grid(column=1, row=4, padx=(30, 10), pady=(2, 5))
+    ew_check_box_left_click_checkbox = ttk.Checkbutton(extra_window, variable=ew_check_box_left_click,onvalue=1, offvalue=0)
+    ew_check_box_left_click_checkbox.grid(column=1, row=3, padx=(30, 10), pady=(2, 5))
 
-    check_box_h_mouse_movement = tkinter.IntVar()
-    check_box_h_mouse_movement_checkbox = ttk.Checkbutton(extra_window, variable=check_box_h_mouse_movement,onvalue=1, offvalue=0)
-    check_box_h_mouse_movement_checkbox.grid(column=1, row=5, padx=(30, 10), pady=(2, 5))
+
+    ew_check_box_double_click_checkbox = ttk.Checkbutton(extra_window, variable=ew_check_box_double_click,onvalue=1, offvalue=0)
+    ew_check_box_double_click_checkbox.grid(column=1, row=4, padx=(30, 10), pady=(2, 5))
+
+
+    ew_check_box_h_mouse_movement_checkbox = ttk.Checkbutton(extra_window, variable=ew_check_box_h_mouse_movement,onvalue=1, offvalue=0)
+    ew_check_box_h_mouse_movement_checkbox.grid(column=1, row=5, padx=(30, 10), pady=(2, 5))
 
     ttk.Label(extra_window, text="Text: ").grid(column=0, row=6, padx=(10, 10), pady=(20, 5))
     textbox = tk.Text(extra_window, height=2, width=30)
@@ -139,7 +141,6 @@ def delete():
     def line_rearrangement():
         pass
 
-
     line_rearrangement()
 
 
@@ -165,15 +166,16 @@ def clear_item():
 
 # invoice_list = []
 
-def add_item(ct):
+def add_item(ct ,wait_time , ):
     global counter
     print(counter, x_pos_spinbox.get())
     print(textbox.get("1.0", 'end-1c'))
+    print(type(wait_time.get()))
 
 
 
-    record = [counter, ct, int(x_pos_spinbox.get()), int(y_pos_spinbox.get()), 'Off', 'Off', 'Off',
-              textbox.get("1.0", 'end-1c'), '0']
+    record = [counter, ct, int(x_pos_spinbox.get()), int(y_pos_spinbox.get()), 'On', 'Off', 'Off',
+              textbox.get("1.0", 'end-1c'), int(wait_time.get())]
     tree.insert('', "end", values=record)
 
     # for line in tree.get_children():
@@ -183,7 +185,7 @@ def add_item(ct):
     clear_item()
     counter = counter + 1
 
-    # invoice_list.append(invoice_item)
+
 
 
 window = tk.Tk()
@@ -241,9 +243,7 @@ y_pos_spinbox.grid(column=1, row=1, padx=(10, 10), pady=(2, 5), ipadx=5)
 
 get_click_position = ttk.Button(tab1, text="Get Click Position").grid(column=3, row=0, rowspan=2, columnspan=3,
                                                                       pady=(25, 0), padx=(8, 8), ipadx=117, ipady=10)
-add_click = ttk.Button(tab1, text="ADD", command=lambda: add_item("C")).grid(column=3, row=2, rowspan=4, columnspan=3,
-                                                                             padx=(10, 10), pady=(5, 15), ipadx=130,
-                                                                             ipady=68)
+
 ttk.Label(tab1, text="Left click ").grid(column=0, row=2, pady=(2, 5))
 ttk.Label(tab1, text="Double click ").grid(column=0, row=3, pady=(2, 5))
 ttk.Label(tab1, text="Human-like mouse move ").grid(column=0, row=4, pady=(2, 5))
@@ -267,6 +267,8 @@ ttk.Label(tab1, text="Wait after step [s]: ").grid(column=0, row=5, padx=(30, 10
 wait_spinbox_click = tk.Spinbox(tab1, from_=0, to=600)
 wait_spinbox_click.grid(column=1, row=5, padx=(10, 10), pady=(2, 5), ipadx=5)
 
+add_click = ttk.Button(tab1, text="ADD", command=lambda: add_item("C", wait_spinbox_click))
+add_click.grid(column=3, row=2, rowspan=4, columnspan=3, padx=(10, 10), pady=(5, 15), ipadx=130, ipady=68)
 # TAB 2
 ttk.Label(tab2, text="Text: ").grid(column=0, row=0, padx=(10, 10), pady=(20, 5))
 textbox = tk.Text(tab2, height=2, width=30)
@@ -276,7 +278,7 @@ ttk.Label(tab2, text="Wait after step [s]: ").grid(column=0, row=2, padx=(30, 10
 wait_spinbox_text = tk.Spinbox(tab2, from_=0, to=600)
 wait_spinbox_text.grid(column=1, row=2, padx=(10, 10), pady=(2, 5), ipadx=5)
 
-add_text = ttk.Button(tab2, text="ADD", command=lambda: add_item("T")).grid(column=0, row=3, columnspan=4,
+add_text = ttk.Button(tab2, text="ADD", command=lambda: add_item("T", wait_spinbox_text)).grid(column=0, row=3, columnspan=4,
                                                                             padx=(40, 40), pady=(5, 15), ipadx=260,
                                                                             ipady=10)
 
@@ -324,6 +326,14 @@ edit_btn = ttk.Button(frame, text="Edit", command=edit)
 edit_btn.grid(row=2, column=0, columnspan=1, padx=5, pady=10)
 del_btn = ttk.Button(frame, text="Delete", command=delete)
 del_btn.grid(row=2, column=2, columnspan=1, padx=5, pady=10)
+
+# extra window
+items = ('C', 'T')
+ew_combobox_value = tk.StringVar(value=items[0])
+
+ew_check_box_left_click = tk.BooleanVar(value=False)
+ew_check_box_double_click = tk.BooleanVar(value=False)
+ew_check_box_h_mouse_movement = tk.BooleanVar(value=False)
 
 tree.bind('<<TreeviewSelect>>', item_select)
 
