@@ -45,5 +45,4 @@ exercise_spin.pack()
 
 exercise_spin.bind('<<Decrement>>', lambda event: print(exercise_string.get()))
 
-# run
 window.mainloop()

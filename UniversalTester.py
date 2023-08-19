@@ -37,40 +37,47 @@ def create_edit_window():
     global extra_window
 
     def select_record():
+        global ew_counter
+        # select row
         selected = tree.focus()
         values = tree.item(selected, 'values')
 
+        # delete all values before editing them
         x_pos_spinbox.delete(0, tk.END)
         y_pos_spinbox.delete(0, tk.END)
         combo.delete(0, tk.END)
         wait_spinbox.delete(0, tk.END)
         textbox.delete(tk.END, tk.END)
-
         ew_check_box_left_click.set(False)
         ew_check_box_double_click.set(False)
         ew_check_box_h_mouse_movement.set(False)
 
-        print(values[1], type(values[1]))
+        # import all values from selected row
+        ew_counter = values[0]
+        combo.insert(0, values[1])
         x_pos_spinbox.insert(0, values[2])
         y_pos_spinbox.insert(0, values[3])
-        combo.insert(0, values[1])
+        ew_check_box_left_click.set(True if values[4] == "x" else False)
+        ew_check_box_double_click.set(True if values[5] == "x" else False)
+        ew_check_box_h_mouse_movement.set(True if values[6] == "x" else False)
         textbox.insert(1.0, values[7])
         wait_spinbox.insert(0, values[8])
 
-        ew_check_box_left_click.set(True if values[4] == "On" else False)
-        ew_check_box_double_click.set(True if values[5] == "On" else False)
-        ew_check_box_h_mouse_movement.set(True if values[6] == "On" else False)
-
-
-
     def update_record():
         selected = tree.focus()
-        tree.item(selected, text="", values=(x_pos_spinbox.get()))
+
+        ew_record = [ew_counter,
+                  combo.get(),
+                  int(x_pos_spinbox.get()) if combo.get() == 'C' else "",
+                  int(y_pos_spinbox.get()) if combo.get() == 'C' else "",
+                  'x' if ew_check_box_left_click.get() == True and combo.get() == 'C' else "",
+                  'x' if ew_check_box_double_click.get() == True and combo.get() == 'C' else "",
+                  'x' if ew_check_box_h_mouse_movement.get() == True and combo.get() == 'C' else "",
+                  textbox.get("1.0", 'end-1c')if combo.get() == 'T' else "",
+                  int(wait_spinbox.get())]
+
+        tree.item(selected, text="", values=ew_record)
         x_pos_spinbox.delete(0, tk.END)
-
-    # def close_edit_window():
-
-
 
     extra_window = tk.Toplevel()
     extra_window.title('Edit window')
@@ -84,7 +91,6 @@ def create_edit_window():
     combo = ttk.Combobox(extra_window, textvariable=ew_combobox_value)
     combo['values'] = items
     combo.grid(column=1, row=0, pady=(30, 5))
-
 
     ttk.Label(extra_window, text="X position: ").grid(column=0, row=1, padx=(10, 10), pady=(0, 5))
     ttk.Label(extra_window, text="Y position: ").grid(column=0, row=2, padx=(10, 10), pady=0)
@@ -123,25 +129,32 @@ def create_edit_window():
 
 
 def edit():
-    # Get selected item to Edit
-    selected_item = tree.selection()[0]
-    # tree.item(selected_item, text="blub", values=("foo", "bar"))
-    # tree.set_children(selected_item, "asd", "asddf")
-    print(selected_item)
-    create_edit_window()
+    try:
+        # Get selected item to Edit
+        selected_item = tree.selection()[0]
+        # tree.item(selected_item, text="blub", values=("foo", "bar"))
+        # tree.set_children(selected_item, "asd", "asddf")
+        print(selected_item)
+        create_edit_window()
+    except:
+        pass
 
 
 
 
 def delete():
-    # Get selected item to Delete
-    selected_item = tree.selection()[0]
-    tree.delete(selected_item)
+    try:
+        # Get selected item to Delete
+        selected_item = tree.selection()[0]
+        tree.delete(selected_item)
 
-    def line_rearrangement():
+        def line_rearrangement():
+            pass
+
+        line_rearrangement()
+    except:
         pass
 
-    line_rearrangement()
 
 
 
@@ -174,8 +187,16 @@ def add_item(ct ,wait_time , ):
 
 
 
-    record = [counter, ct, int(x_pos_spinbox.get()), int(y_pos_spinbox.get()), 'On', 'Off', 'Off',
-              textbox.get("1.0", 'end-1c'), int(wait_time.get())]
+    record = [counter,
+              ct,
+              int(x_pos_spinbox.get()) if ct == 'C' else "",
+              int(y_pos_spinbox.get()) if ct == 'C' else "",
+              'x' if check_box_left_click.get() == 1 and ct == 'C' else "",
+              'x' if check_box_double_click.get() == 1 and ct == 'C'  else "",
+              'x' if check_box_h_mouse_movement.get() == 1 and ct == 'C'  else "",
+              textbox.get("1.0", 'end-1c') if ct == 'T' else "",
+              int(wait_time.get())]
+
     tree.insert('', "end", values=record)
 
     # for line in tree.get_children():
@@ -328,6 +349,7 @@ del_btn = ttk.Button(frame, text="Delete", command=delete)
 del_btn.grid(row=2, column=2, columnspan=1, padx=5, pady=10)
 
 # extra window
+ew_counter = 0
 items = ('C', 'T')
 ew_combobox_value = tk.StringVar(value=items[0])
 
