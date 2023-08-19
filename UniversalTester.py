@@ -6,6 +6,7 @@ from tkinter import messagebox
 counter = 1
 print(counter)
 
+
 # if not isinstance(number, int):
 #    raise TypeError("Sorry. 'number' must be an integer.")
 # if number < 0:
@@ -22,19 +23,7 @@ def item_select(_):
     #     print(tree.item(item))
 
 
-def close_window():
-    extra_window.destroy()
-    print(extra_window)
-
-
-def ask_yes_no():
-    answer = messagebox.askquestion('Title', 'Keresett a Feri')
-    print(answer)
-    messagebox.showerror('Info title', answer)
-
-
 def create_edit_window():
-    global extra_window
 
     def select_record():
         global ew_counter
@@ -67,22 +56,26 @@ def create_edit_window():
         selected = tree.focus()
 
         ew_record = [ew_counter,
-                  combo.get(),
-                  int(x_pos_spinbox.get()) if combo.get() == 'C' else "",
-                  int(y_pos_spinbox.get()) if combo.get() == 'C' else "",
-                  'x' if ew_check_box_left_click.get() == True and combo.get() == 'C' else "",
-                  'x' if ew_check_box_double_click.get() == True and combo.get() == 'C' else "",
-                  'x' if ew_check_box_h_mouse_movement.get() == True and combo.get() == 'C' else "",
-                  textbox.get("1.0", 'end-1c')if combo.get() == 'T' else "",
-                  int(wait_spinbox.get())]
+                     combo.get(),
+                     int(x_pos_spinbox.get()) if combo.get() == 'C' else "",
+                     int(y_pos_spinbox.get()) if combo.get() == 'C' else "",
+                     'x' if ew_check_box_left_click.get() is True and combo.get() == 'C' else "",
+                     'x' if ew_check_box_double_click.get() is True and combo.get() == 'C' else "",
+                     'x' if ew_check_box_h_mouse_movement.get() is True and combo.get() == 'C' else "",
+                     textbox.get("1.0", 'end-1c') if combo.get() == 'T' else "",
+                     int(wait_spinbox.get())]
 
         tree.item(selected, text="", values=ew_record)
-        x_pos_spinbox.delete(0, tk.END)
+
+        if combo.get() == 'C' and textbox.get("1.0", 'end-1c') != '':
+            # answer = messagebox.askquestion('Title', 'You chose ' )
+            messagebox.showinfo('Info', 'You chose "Click" as action, therefore the text is not added to the record')
 
     extra_window = tk.Toplevel()
     extra_window.title('Edit window')
 
-    save_values_button = ttk.Button(extra_window, text='Save values', command=lambda: [update_record(), extra_window.destroy()])
+    save_values_button = ttk.Button(extra_window, text='Save values',
+                                    command=lambda: [update_record(), extra_window.destroy()])
     save_values_button.grid(row=10, column=1, pady=(40, 0))
 
     ttk.Label(extra_window, text="Click/Text ").grid(column=0, row=0, pady=(30, 5))
@@ -104,16 +97,16 @@ def create_edit_window():
     ttk.Label(extra_window, text="Double click ").grid(column=0, row=4, pady=(2, 5))
     ttk.Label(extra_window, text="Human-like mouse move ").grid(column=0, row=5, pady=(2, 5))
 
-
-    ew_check_box_left_click_checkbox = ttk.Checkbutton(extra_window, variable=ew_check_box_left_click,onvalue=1, offvalue=0)
+    ew_check_box_left_click_checkbox = ttk.Checkbutton(extra_window, variable=ew_check_box_left_click, onvalue=1,
+                                                       offvalue=0)
     ew_check_box_left_click_checkbox.grid(column=1, row=3, padx=(30, 10), pady=(2, 5))
 
-
-    ew_check_box_double_click_checkbox = ttk.Checkbutton(extra_window, variable=ew_check_box_double_click,onvalue=1, offvalue=0)
+    ew_check_box_double_click_checkbox = ttk.Checkbutton(extra_window, variable=ew_check_box_double_click, onvalue=1,
+                                                         offvalue=0)
     ew_check_box_double_click_checkbox.grid(column=1, row=4, padx=(30, 10), pady=(2, 5))
 
-
-    ew_check_box_h_mouse_movement_checkbox = ttk.Checkbutton(extra_window, variable=ew_check_box_h_mouse_movement,onvalue=1, offvalue=0)
+    ew_check_box_h_mouse_movement_checkbox = ttk.Checkbutton(extra_window, variable=ew_check_box_h_mouse_movement,
+                                                             onvalue=1, offvalue=0)
     ew_check_box_h_mouse_movement_checkbox.grid(column=1, row=5, padx=(30, 10), pady=(2, 5))
 
     ttk.Label(extra_window, text="Text: ").grid(column=0, row=6, padx=(10, 10), pady=(20, 5))
@@ -127,7 +120,6 @@ def create_edit_window():
     select_record()
 
 
-
 def edit():
     try:
         # Get selected item to Edit
@@ -138,8 +130,6 @@ def edit():
         create_edit_window()
     except:
         pass
-
-
 
 
 def delete():
@@ -156,10 +146,7 @@ def delete():
         pass
 
 
-
-
 def clear_item():
-
     def clear_edit_window_items():
         print("asd")
 
@@ -179,21 +166,19 @@ def clear_item():
 
 # invoice_list = []
 
-def add_item(ct ,wait_time , ):
+def add_item(ct, wait_time, ):
     global counter
     print(counter, x_pos_spinbox.get())
     print(textbox.get("1.0", 'end-1c'))
     print(type(wait_time.get()))
-
-
 
     record = [counter,
               ct,
               int(x_pos_spinbox.get()) if ct == 'C' else "",
               int(y_pos_spinbox.get()) if ct == 'C' else "",
               'x' if check_box_left_click.get() == 1 and ct == 'C' else "",
-              'x' if check_box_double_click.get() == 1 and ct == 'C'  else "",
-              'x' if check_box_h_mouse_movement.get() == 1 and ct == 'C'  else "",
+              'x' if check_box_double_click.get() == 1 and ct == 'C' else "",
+              'x' if check_box_h_mouse_movement.get() == 1 and ct == 'C' else "",
               textbox.get("1.0", 'end-1c') if ct == 'T' else "",
               int(wait_time.get())]
 
@@ -205,8 +190,6 @@ def add_item(ct ,wait_time , ):
 
     clear_item()
     counter = counter + 1
-
-
 
 
 window = tk.Tk()
@@ -277,11 +260,11 @@ check_box_left_click_checkbox = ttk.Checkbutton(tab1, variable=check_box_left_cl
 check_box_left_click_checkbox.grid(column=1, row=2, padx=(30, 10), pady=(2, 5))
 
 check_box_double_click = tkinter.IntVar()
-check_box_double_click_checkbox = ttk.Checkbutton(tab1, variable=check_box_double_click,onvalue=1, offvalue=0)
+check_box_double_click_checkbox = ttk.Checkbutton(tab1, variable=check_box_double_click, onvalue=1, offvalue=0)
 check_box_double_click_checkbox.grid(column=1, row=3, padx=(30, 10), pady=(2, 5))
 
 check_box_h_mouse_movement = tkinter.IntVar()
-check_box_h_mouse_movement_checkbox= ttk.Checkbutton(tab1, variable=check_box_h_mouse_movement,onvalue=1, offvalue=0)
+check_box_h_mouse_movement_checkbox = ttk.Checkbutton(tab1, variable=check_box_h_mouse_movement, onvalue=1, offvalue=0)
 check_box_h_mouse_movement_checkbox.grid(column=1, row=4, padx=(30, 10), pady=(2, 5))
 
 ttk.Label(tab1, text="Wait after step [s]: ").grid(column=0, row=5, padx=(30, 10), pady=(2, 5))
@@ -299,9 +282,11 @@ ttk.Label(tab2, text="Wait after step [s]: ").grid(column=0, row=2, padx=(30, 10
 wait_spinbox_text = tk.Spinbox(tab2, from_=0, to=600)
 wait_spinbox_text.grid(column=1, row=2, padx=(10, 10), pady=(2, 5), ipadx=5)
 
-add_text = ttk.Button(tab2, text="ADD", command=lambda: add_item("T", wait_spinbox_text)).grid(column=0, row=3, columnspan=4,
-                                                                            padx=(40, 40), pady=(5, 15), ipadx=260,
-                                                                            ipady=10)
+add_text = ttk.Button(tab2, text="ADD", command=lambda: add_item("T", wait_spinbox_text)).grid(column=0, row=3,
+                                                                                               columnspan=4,
+                                                                                               padx=(40, 40),
+                                                                                               pady=(5, 15), ipadx=260,
+                                                                                               ipady=10)
 
 # TAB 3
 ttk.Label(tab3, text="Wait after step [s]: ").grid(column=0, row=0, padx=(30, 10), pady=(100, 30))
