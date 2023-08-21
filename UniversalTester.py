@@ -14,7 +14,7 @@ print(counter)
 
 
 def item_select(_):
-    print(tree.selection())
+    print(tree.selection(), type(tree.selection()))
     for i in tree.selection():
         print(tree.item(i)['values'])
 
@@ -133,17 +133,28 @@ def edit():
 
 
 def delete():
-    try:
-        # Get selected item to Delete
-        selected_item = tree.selection()[0]
-        tree.delete(selected_item)
 
-        def line_rearrangement():
-            pass
+    def line_rearrangement():
 
-        line_rearrangement()
-    except:
-        pass
+        line_counter = 1
+        for item in tree.get_children():
+            lines = tree.item(item)['values']
+            print(tree.item)
+            print(line_counter, lines[0], type(lines[0]))
+            if lines[0] != line_counter:
+                print(lines)
+                lines[0] = line_counter
+            else:
+                print(lines)
+            line_counter += 1
+
+
+
+# Get selected item to Delete
+    selected_item = tree.selection()[0]
+    tree.delete(selected_item)
+
+    line_rearrangement()
 
 
 def clear_item():
