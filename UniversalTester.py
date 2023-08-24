@@ -6,22 +6,10 @@ from tkinter import messagebox
 counter = 1
 print(counter)
 
-
-# if not isinstance(number, int):
-#    raise TypeError("Sorry. 'number' must be an integer.")
-# if number < 0:
-#    raise ValueError("Sorry. 'number' must be zero or positive.")
-
-
 def item_select(_):
     print(tree.selection(), type(tree.selection()))
     for i in tree.selection():
         print(tree.item(i)['values'])
-
-    # for item in tree.get_children():
-    #     print(tree.item(item)['values'])
-    #     print(tree.item(item))
-
 
 def create_edit_window():
 
@@ -135,6 +123,7 @@ def edit():
 def delete():
 
     def line_rearrangement():
+        global counter
 
         rearrangement_list_rows = len(tree.get_children())
         rearrangement_list_columns = 9
@@ -150,7 +139,7 @@ def delete():
             tree.delete(item)
             tree.insert('', "end", values=rearrangement_list[line_counter-1])
             line_counter += 1
-
+            counter = line_counter
 
 
 
@@ -162,8 +151,6 @@ def delete():
 
 
 def clear_item():
-    def clear_edit_window_items():
-        print("asd")
 
     y_pos_spinbox.delete(0, tk.END)
     y_pos_spinbox.insert(0, "0")
@@ -177,9 +164,6 @@ def clear_item():
     check_box_left_click.set(0)
     check_box_double_click.set(0)
     check_box_h_mouse_movement.set(0)
-
-
-# invoice_list = []
 
 def add_item(ct, wait_time, ):
     global counter
@@ -198,10 +182,6 @@ def add_item(ct, wait_time, ):
               int(wait_time.get())]
 
     tree.insert('', "end", values=record)
-
-    # for line in tree.get_children():
-    #     for value in tree.item(line)['values']:
-    #         print(value)
 
     clear_item()
     counter = counter + 1
