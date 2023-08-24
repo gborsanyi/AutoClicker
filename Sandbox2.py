@@ -1,8 +1,17 @@
-import tkinter as tk
-from tkinter import ttk
+import pyautogui
+import keyboard
 
-anyad = "adf"
-print(anyad)
-tuple(anyad)
+from pynput import mouse
 
-print(type(anyad))
+def on_click(x, y, button, pressed):
+    if pressed:
+        print(f"Mouse button {button} was clicked at ({x}, {y})")
+
+# Create a listener for mouse events
+listener = mouse.Listener(on_click=on_click)
+
+# Start listening for mouse events
+listener.start()
+
+# Keep the program running
+listener.join()

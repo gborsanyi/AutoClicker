@@ -1,10 +1,19 @@
+import threading
+import time
 import tkinter
 import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
+import win32api
+import mouse
+import keyboard
+
+
 
 counter = 1
 print(counter)
+
+# GUI Handling
 
 def item_select(_):
     print(tree.selection(), type(tree.selection()))
@@ -20,8 +29,8 @@ def create_edit_window():
         values = tree.item(selected, 'values')
 
         # delete all values before editing them
-        x_pos_spinbox.delete(0, tk.END)
-        y_pos_spinbox.delete(0, tk.END)
+        ew_x_pos_spinbox.delete(0, tk.END)
+        ew_y_pos_spinbox.delete(0, tk.END)
         combo.delete(0, tk.END)
         wait_spinbox.delete(0, tk.END)
         textbox.delete(tk.END, tk.END)
@@ -32,8 +41,8 @@ def create_edit_window():
         # import all values from selected row
         ew_counter = values[0]
         combo.insert(0, values[1])
-        x_pos_spinbox.insert(0, values[2])
-        y_pos_spinbox.insert(0, values[3])
+        ew_x_pos_spinbox.insert(0, values[2])
+        ew_y_pos_spinbox.insert(0, values[3])
         ew_check_box_left_click.set(True if values[4] == "x" else False)
         ew_check_box_double_click.set(True if values[5] == "x" else False)
         ew_check_box_h_mouse_movement.set(True if values[6] == "x" else False)
@@ -45,13 +54,15 @@ def create_edit_window():
 
         ew_record = [ew_counter,
                      combo.get(),
-                     int(x_pos_spinbox.get()) if combo.get() == 'C' else "",
-                     int(y_pos_spinbox.get()) if combo.get() == 'C' else "",
+                     int(ew_x_pos_spinbox.get()) if combo.get() == 'C' else "",
+                     int(ew_y_pos_spinbox.get()) if combo.get() == 'C' else "",
                      'x' if ew_check_box_left_click.get() is True and combo.get() == 'C' else "",
                      'x' if ew_check_box_double_click.get() is True and combo.get() == 'C' else "",
                      'x' if ew_check_box_h_mouse_movement.get() is True and combo.get() == 'C' else "",
                      textbox.get("1.0", 'end-1c') if combo.get() == 'T' else "",
                      int(wait_spinbox.get())]
+
+
 
         tree.item(selected, text="", values=ew_record)
 
@@ -59,8 +70,26 @@ def create_edit_window():
             # answer = messagebox.askquestion('Title', 'You chose ' )
             messagebox.showinfo('Info', 'You chose "Click" as action, therefore the text is not added to the record')
 
+    def ew_get_click_position_x_y():
+        click_x = 1
+        click_y = 0
+        while True:
+            time.sleep(0.01)
+            if keyboard.is_pressed('ctrl') and mouse.is_pressed(button='left'):
+                click_x, click_y = mouse.get_position()
+                ew_x_pos_spinbox.delete(0, tk.END)
+                ew_y_pos_spinbox.delete(0, tk.END)
+                ew_x_pos_spinbox.insert(0, click_x)
+                ew_y_pos_spinbox.insert(0, click_y)
+                break
+            else:
+                continue
+
     extra_window = tk.Toplevel()
     extra_window.title('Edit window')
+
+    ew_get_click_position = ttk.Button(extra_window, text="Get Click Position (CTRL+Click)", command=ew_get_click_position_x_y)
+    ew_get_click_position.grid(column=2, row=1, rowspan=2, pady=(25, 25), padx=(20, 20))
 
     save_values_button = ttk.Button(extra_window, text='Save values',
                                     command=lambda: [update_record(), extra_window.destroy()])
@@ -76,10 +105,10 @@ def create_edit_window():
     ttk.Label(extra_window, text="X position: ").grid(column=0, row=1, padx=(10, 10), pady=(0, 5))
     ttk.Label(extra_window, text="Y position: ").grid(column=0, row=2, padx=(10, 10), pady=0)
 
-    x_pos_spinbox = tk.Spinbox(extra_window, from_=0, to=3000)
-    x_pos_spinbox.grid(column=1, row=1, padx=(10, 10), pady=(2, 5), ipadx=1)
-    y_pos_spinbox = tk.Spinbox(extra_window, from_=0, to=2000)
-    y_pos_spinbox.grid(column=1, row=2, padx=(10, 10), pady=(2, 5), ipadx=1)
+    ew_x_pos_spinbox = tk.Spinbox(extra_window, from_=0, to=3000)
+    ew_x_pos_spinbox.grid(column=1, row=1, padx=(10, 10), pady=(2, 5), ipadx=1)
+    ew_y_pos_spinbox = tk.Spinbox(extra_window, from_=0, to=2000)
+    ew_y_pos_spinbox.grid(column=1, row=2, padx=(10, 10), pady=(2, 5), ipadx=1)
 
     ttk.Label(extra_window, text="Left click ").grid(column=0, row=3, pady=(2, 5))
     ttk.Label(extra_window, text="Double click ").grid(column=0, row=4, pady=(2, 5))
@@ -112,8 +141,7 @@ def edit():
     try:
         # Get selected item to Edit
         selected_item = tree.selection()[0]
-        # tree.item(selected_item, text="blub", values=("foo", "bar"))
-        # tree.set_children(selected_item, "asd", "asddf")
+
         print(selected_item)
         create_edit_window()
     except:
@@ -142,7 +170,6 @@ def delete():
             counter = line_counter
 
 
-
 # Get selected item to Delete
     selected_item = tree.selection()[0]
     tree.delete(selected_item)
@@ -165,7 +192,7 @@ def clear_item():
     check_box_double_click.set(0)
     check_box_h_mouse_movement.set(0)
 
-def add_item(ct, wait_time, ):
+def add_item(ct, wait_time):
     global counter
     print(counter, x_pos_spinbox.get())
     print(textbox.get("1.0", 'end-1c'))
@@ -185,6 +212,25 @@ def add_item(ct, wait_time, ):
 
     clear_item()
     counter = counter + 1
+
+# Get click position
+
+
+
+def get_click_position_x_y():
+    click_x = 1
+    click_y = 0
+    while True:
+        time.sleep(0.01)
+        if keyboard.is_pressed('ctrl') and mouse.is_pressed(button='left'):
+            click_x, click_y = mouse.get_position()
+            x_pos_spinbox.delete(0, tk.END)
+            y_pos_spinbox.delete(0, tk.END)
+            x_pos_spinbox.insert(0, click_x)
+            y_pos_spinbox.insert(0, click_y)
+            break
+        else:
+            continue
 
 
 window = tk.Tk()
@@ -229,7 +275,7 @@ tab3 = ttk.Frame(tabControl)
 
 tabControl.add(tab1, text='Add Click')
 tabControl.add(tab2, text='Tab Text')
-tabControl.add(tab3, text='Add Wait')
+tabControl.add(tab3, text='Add Wait (Inactive tab)')
 
 # TAB 1
 ttk.Label(tab1, text="X position: ").grid(column=0, row=0, padx=(10, 10), pady=(20, 5))
@@ -240,8 +286,8 @@ x_pos_spinbox.grid(column=1, row=0, padx=(10, 10), pady=(30, 5), ipadx=5)
 y_pos_spinbox = tk.Spinbox(tab1, from_=0, to=2000)
 y_pos_spinbox.grid(column=1, row=1, padx=(10, 10), pady=(2, 5), ipadx=5)
 
-get_click_position = ttk.Button(tab1, text="Get Click Position").grid(column=3, row=0, rowspan=2, columnspan=3,
-                                                                      pady=(25, 0), padx=(8, 8), ipadx=117, ipady=10)
+get_click_position = ttk.Button(tab1, text="Get Click Position (CTRL+Click)", command=get_click_position_x_y)
+get_click_position.grid(column=3, row=0, rowspan=2, columnspan=3, pady=(25, 0), padx=(8, 8), ipadx=80, ipady=10)
 
 ttk.Label(tab1, text="Left click ").grid(column=0, row=2, pady=(2, 5))
 ttk.Label(tab1, text="Double click ").grid(column=0, row=3, pady=(2, 5))
@@ -296,19 +342,19 @@ tree = ttk.Treeview(frame, columns=columns, show="headings")
 
 tree.tag_configure('ttk', background='yellow')
 tree.heading('line', text='Line')
-tree.column('line', minwidth=0, width=30, anchor=tk.CENTER)
+tree.column('line', minwidth=0, width=40, anchor=tk.CENTER)
 tree.heading('C/T', text='Click/Text')
-tree.column('C/T', minwidth=0, width=60, anchor=tk.CENTER)
+tree.column('C/T', minwidth=0, width=90, anchor=tk.CENTER)
 tree.heading('X pos', text='X pos')
-tree.column('X pos', minwidth=0, width=38, anchor=tk.CENTER)
+tree.column('X pos', minwidth=0, width=55, anchor=tk.CENTER)
 tree.heading('Y pos', text="Y pos")
-tree.column('Y pos', minwidth=0, width=38, anchor=tk.CENTER)
+tree.column('Y pos', minwidth=0, width=55, anchor=tk.CENTER)
 tree.heading('Left Click', text="Left Click")
-tree.column('Left Click', minwidth=0, width=60, anchor=tk.CENTER)
+tree.column('Left Click', minwidth=0, width=85, anchor=tk.CENTER)
 tree.heading('Double click', text="Double click")
-tree.column('Double click', minwidth=0, width=75, anchor=tk.CENTER)
+tree.column('Double click', minwidth=0, width=110, anchor=tk.CENTER)
 tree.heading('Hl mouse movement', text="HLMM")
-tree.column('Hl mouse movement', minwidth=0, width=50, anchor=tk.CENTER)
+tree.column('Hl mouse movement', minwidth=0, width=80, anchor=tk.CENTER)
 tree.heading('Text', text="Text")
 tree.column('Text', minwidth=0, width=280, anchor=tk.CENTER)
 tree.heading('Wait', text="Wait [s]")
@@ -322,6 +368,10 @@ save_sequence_button = tk.Button(frame, text="Save sequence")
 save_sequence_button.grid(row=4, column=0, columnspan=3, sticky="news", padx=20, pady=7)
 run_sequence_button = tk.Button(frame, text="RUN SEQUENCE", bg="#5cc41e")
 run_sequence_button.grid(row=5, column=0, columnspan=3, sticky="news", padx=20, pady=5, ipady=10)
+run_sequence_continuously_button = tk.Button(frame, text="RUN SEQUENCE CONTINUOUSLY", bg="#03AC13")
+run_sequence_continuously_button.grid(row=6, column=0,columnspan=2, sticky="news",padx=20, pady=5, ipadx=5, ipady=5)
+stop_sequence_button = tk.Button(frame, text="STOP SEQUENCE", bg="#FF0000")
+stop_sequence_button.grid(row=6, column=2, columnspan=2, sticky="news", padx=20, pady=5, ipadx=5, ipady=5)
 
 edit_btn = ttk.Button(frame, text="Edit", command=edit)
 edit_btn.grid(row=2, column=0, columnspan=1, padx=5, pady=10)
@@ -338,5 +388,7 @@ ew_check_box_double_click = tk.BooleanVar(value=False)
 ew_check_box_h_mouse_movement = tk.BooleanVar(value=False)
 
 tree.bind('<<TreeviewSelect>>', item_select)
+
+
 
 window.mainloop()
