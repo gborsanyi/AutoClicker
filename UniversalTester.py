@@ -136,17 +136,21 @@ def delete():
 
     def line_rearrangement():
 
+        rearrangement_list_rows = len(tree.get_children())
+        rearrangement_list_columns = 9
+        rearrangement_list = [[0]*rearrangement_list_columns]*rearrangement_list_rows
+
         line_counter = 1
         for item in tree.get_children():
             lines = tree.item(item)['values']
-            print(tree.item)
-            print(line_counter, lines[0], type(lines[0]))
+            rearrangement_list[line_counter-1] = lines
             if lines[0] != line_counter:
-                print(lines)
-                lines[0] = line_counter
-            else:
-                print(lines)
+                rearrangement_list[line_counter-1][0] = line_counter
+
+            tree.delete(item)
+            tree.insert('', "end", values=rearrangement_list[line_counter-1])
             line_counter += 1
+
 
 
 
