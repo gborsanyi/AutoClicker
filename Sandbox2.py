@@ -1,17 +1,26 @@
-import pyautogui
-import keyboard
+import mouse
+import tkinter as tk
+from tkinter import ttk
 
-from pynput import mouse
+def run_sequence():
+    for row in tree.get_children():
+        actual_row = tree.item(row, 'tags')
+        if 'C' in actual_row:
+            coords = tree.item(row, 'values')[2:4]
+            mouse.move(*coords)
+            mouse.click('left')
+        elif 'T' in actual_row:
+            pass
 
-def on_click(x, y, button, pressed):
-    if pressed:
-        print(f"Mouse button {button} was clicked at ({x}, {y})")
+root = tk.Tk()
 
-# Create a listener for mouse events
-listener = mouse.Listener(on_click=on_click)
+tree = ttk.Treeview(root, columns=('Type', 'Value', 'X', 'Y'))
+tree.pack()
 
-# Start listening for mouse events
-listener.start()
+tree.insert("", "end", values=('C', 'Click', 100, 200), tags=('C',))
+tree.insert("", "end", values=('T', 'Text', 300, 400), tags=('T',))
 
-# Keep the program running
-listener.join()
+run_button = tk.Button(root, text="Run Sequence", command=run_sequence)
+run_button.pack()
+
+root.mainloop()
