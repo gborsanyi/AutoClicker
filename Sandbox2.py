@@ -1,26 +1,24 @@
-import mouse
-import tkinter as tk
-from tkinter import ttk
+import threading
+import queue
+import time
 
-def run_sequence():
-    for row in tree.get_children():
-        actual_row = tree.item(row, 'tags')
-        if 'C' in actual_row:
-            coords = tree.item(row, 'values')[2:4]
-            mouse.move(*coords)
-            mouse.click('left')
-        elif 'T' in actual_row:
-            pass
+q = queue.Queue()
 
-root = tk.Tk()
+def worker():
+    while True:
+        item = q.get()
+        print(f'Working on {item}')
+        print(f'Finished {item}')
+        q.task_done()
+        time.sleep(1)
 
-tree = ttk.Treeview(root, columns=('Type', 'Value', 'X', 'Y'))
-tree.pack()
+# Turn-on the worker thread.
+threading.Thread(target=worker, daemon=True).start()
 
-tree.insert("", "end", values=('C', 'Click', 100, 200), tags=('C',))
-tree.insert("", "end", values=('T', 'Text', 300, 400), tags=('T',))
+# Send thirty task requests to the worker.
+for item in range(30):
+    q.put(item)
 
-run_button = tk.Button(root, text="Run Sequence", command=run_sequence)
-run_button.pack()
-
-root.mainloop()
+# Block until all tasks are done.
+q.join()
+print('All work completed')

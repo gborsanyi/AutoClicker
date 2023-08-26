@@ -27,4 +27,5 @@ check_box_left_click_proba_checkbox = ttk.Checkbutton(root, variable=check_box_l
                                                       offvalue=0)
 check_box_left_click_proba_checkbox.pack()
 
+
 root.mainloop()

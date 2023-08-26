@@ -1,3 +1,4 @@
+import queue
 import threading
 import time
 import tkinter
@@ -262,41 +263,61 @@ def load_sequence():
         tree.insert('', "end", values=item)
 
 def run_sequence():
+    global stop_seq
+    stop_seq = False
+
+    def stop_listener():
+        global stop_seq
+
+        while True:
+            time.sleep(0.5)
+            if keyboard.is_pressed('s'):
+                stop_seq = True
+            print(f"stop_seq is {stop_seq}")
+
+    t1 = threading.Thread(target=stop_listener)
+    t1.start()
+
     for row in tree.get_children():
-        print(tree.item(row)['values'])
-        actual_row = tree.item(row)['values']
-        if actual_row[1] == 'C':
-            mouse.move(actual_row[2], actual_row[3], duration=1)
-            if actual_row[4] == 'x':
-                mouse.click('right')
-            elif actual_row[5] == 'x':
-                mouse.double_click('left')
-            elif actual_row[5] == 'x':
-                # HLMM to be checked
-                pass
-            else:
-                mouse.click('left')
-            time.sleep(float(actual_row[8]))
-        elif actual_row[1] == 'T':
-            if actual_row[7] == "enter":
-                keyboard.press("enter")
-            # if actual_row[7] == "ctrl":
-            #     keyboard.press("ctrl")
-            # if actual_row[7] == "shift":
-            #     keyboard.press("shift")
-            else:
-                keyboard.write(actual_row[7])
-            time.sleep(float(actual_row[8]))
-
-# def stop_sequence():
-#     global stop_seq
-#     stop_seq = 1
-#     time.sleep(1)
-#     stop_seq = 0
+        if stop_seq is True:
+            print("Stopping sequence due to stop_seq")
+            break
+        else:
+            print(tree.item(row)['values'])
+            actual_row = tree.item(row)['values']
+            if actual_row[1] == 'C':
+                mouse.move(actual_row[2], actual_row[3], duration=1)
+                if actual_row[4] == 'x':
+                    mouse.click('right')
+                elif actual_row[5] == 'x':
+                    mouse.double_click('left')
+                elif actual_row[5] == 'x':
+                    # HLMM to be checked
+                    pass
+                else:
+                    mouse.click('left')
+                time.sleep(float(actual_row[8]))
+            elif actual_row[1] == 'T':
+                if actual_row[7] == "enter":
+                    keyboard.press("enter")
+                # if actual_row[7] == "ctrl":
+                #     keyboard.press("ctrl")
+                # if actual_row[7] == "shift":
+                #     keyboard.press("shift")
+                else:
+                    keyboard.write(actual_row[7])
+                time.sleep(float(actual_row[8]))
 
 
+def run_sequence_countinuously():
+    global stop_seq
+    stop_seq = False
+    while stop_seq is False:
+        run_sequence()
 
-# stop_seq = 0
+
+stop_seq = False
+
 window = tk.Tk()
 window.title("Auto Clicker")
 
@@ -425,6 +446,8 @@ tree.heading('Wait', text="Wait [s]")
 tree.column('Wait', minwidth=0, width=50, anchor=tk.CENTER)
 tree.grid(row=1, column=0, columnspan=3, padx=30, pady=10)
 
+
+
 # Buttons
 save_sequence_button = tk.Button(frame, text="Save sequence", command=save_sequence)
 save_sequence_button.grid(row=3, column=0, columnspan=3, sticky="news", padx=20, pady=7)
@@ -432,9 +455,9 @@ load_sequence_button = tk.Button(frame, text="Load sequence", command=load_seque
 load_sequence_button.grid(row=4, column=0, columnspan=3, sticky="news", padx=20, pady=7)
 run_sequence_button = tk.Button(frame, text="RUN SEQUENCE", bg="#5cc41e", command=run_sequence)
 run_sequence_button.grid(row=5, column=0, columnspan=3, sticky="news", padx=20, pady=5, ipady=10)
-run_sequence_continuously_button = tk.Button(frame, text="RUN SEQUENCE CONTINUOUSLY", bg="#03AC13")
+run_sequence_continuously_button = tk.Button(frame, text="RUN SEQUENCE CONTINUOUSLY", bg="#03AC13", command=run_sequence_countinuously)
 run_sequence_continuously_button.grid(row=6, column=0,columnspan=2, sticky="news", padx=20, pady=5, ipadx=5, ipady=5)
-stop_sequence_button = tk.Button(frame, text="STOP SEQUENCE", bg="#FF0000")
+stop_sequence_button = tk.Button(frame, text="STOP SEQUENCE  (Press S)", bg="#FF0000")
 stop_sequence_button.grid(row=6, column=2, columnspan=2, sticky="news", padx=20, pady=5, ipadx=155, ipady=5)
 
 edit_btn = ttk.Button(frame, text="Edit", command=edit)
