@@ -12,6 +12,9 @@ import keyboard
 import json
 
 
+
+
+
 counter = 1
 print(counter)
 
@@ -270,10 +273,9 @@ def run_sequence():
         global stop_seq
 
         while True:
-            time.sleep(0.5)
+            time.sleep(0.1)
             if keyboard.is_pressed('s'):
                 stop_seq = True
-            print(f"stop_seq is {stop_seq}")
 
     t1 = threading.Thread(target=stop_listener)
     t1.start()
@@ -292,11 +294,14 @@ def run_sequence():
                 elif actual_row[5] == 'x':
                     mouse.double_click('left')
                 elif actual_row[5] == 'x':
+                    # todo: HLMM resolve conflict of pyautogui or solve it somehow
                     # HLMM to be checked
                     pass
                 else:
                     mouse.click('left')
                 time.sleep(float(actual_row[8]))
+                print("executing click")
+
             elif actual_row[1] == 'T':
                 if actual_row[7] == "enter":
                     keyboard.press("enter")
@@ -304,6 +309,7 @@ def run_sequence():
                 #     keyboard.press("ctrl")
                 # if actual_row[7] == "shift":
                 #     keyboard.press("shift")
+                #todo: solve hotkey long presses to enable complete functionality
                 else:
                     keyboard.write(actual_row[7])
                 time.sleep(float(actual_row[8]))
@@ -420,6 +426,8 @@ wait_spinbox_wait = tk.Spinbox(tab3, from_=0, to=600).grid(column=1, row=0, padx
 add_wait = ttk.Button(tab3, text="ADD").grid(column=0, row=1, columnspan=4, padx=(40, 40), pady=(5, 15), ipadx=260,
                                              ipady=10)
 
+#todo: add result processing tab and lines
+
 # Table / Treeview
 
 columns = ('line', 'C/T', 'X pos', 'Y pos', "Right Click", "Double click", "Hl mouse movement", "Text", "Wait")
@@ -458,7 +466,7 @@ run_sequence_button.grid(row=5, column=0, columnspan=3, sticky="news", padx=20, 
 run_sequence_continuously_button = tk.Button(frame, text="RUN SEQUENCE CONTINUOUSLY", bg="#03AC13", command=run_sequence_countinuously)
 run_sequence_continuously_button.grid(row=6, column=0,columnspan=2, sticky="news", padx=20, pady=5, ipadx=5, ipady=5)
 stop_sequence_button = tk.Button(frame, text="STOP SEQUENCE  (Press S)", bg="#FF0000")
-stop_sequence_button.grid(row=6, column=2, columnspan=2, sticky="news", padx=20, pady=5, ipadx=155, ipady=5)
+stop_sequence_button.grid(row=6, column=2, columnspan=2, sticky="news", padx=20, pady=5, ipadx=130, ipady=5)
 
 edit_btn = ttk.Button(frame, text="Edit", command=edit)
 edit_btn.grid(row=2, column=0, columnspan=1, padx=5, pady=10)
@@ -475,7 +483,5 @@ ew_check_box_double_click = tk.BooleanVar(value=False)
 ew_check_box_h_mouse_movement = tk.BooleanVar(value=False)
 
 tree.bind('<<TreeviewSelect>>', item_select)
-
-
 
 window.mainloop()

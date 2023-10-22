@@ -1,31 +1,30 @@
-import tkinter as tk
-from tkinter import ttk
+import pyautogui
+import random
+import time
 
-def insert_value():
-    # value = entry.get()  # Get the value from the Entry widget
-    combo.insert(tk.END, 'C')  # Insert the value at the end of the list
-    check_box_left_click_proba.set(0)
+# Define the screen dimensions
+screen_width, screen_height = pyautogui.size()
 
-root = tk.Tk()
-root.title("Combobox Insert Example")
+# Define the number of mouse movements
+num_movements = 10
 
-entry = tk.Entry(root)
-entry.pack()
-
-insert_button = tk.Button(root, text="Insert Value", command=insert_value)
-insert_button.pack()
-
-ttk.Label(root, text="Click/Text ").pack()
-items = ('C', 'T')
-food_string = tk.StringVar(value=items[0])
-combo = ttk.Combobox(root, textvariable=food_string)
-combo['values'] = items
-combo.pack()
-
-check_box_left_click_proba = tk.BooleanVar()
-check_box_left_click_proba_checkbox = ttk.Checkbutton(root, variable=check_box_left_click_proba, onvalue=1,
-                                                      offvalue=0)
-check_box_left_click_proba_checkbox.pack()
+# Define the speed of mouse movement
+movement_speed = 0.5  # Adjust this value as needed
 
 
-root.mainloop()
+# Function to simulate human-like mouse movement
+def human_like_mouse_movement():
+    for _ in range(num_movements):
+        # Generate random coordinates within the screen boundaries
+        x = random.randint(0, screen_width)
+        y = random.randint(0, screen_height)
+
+        # Move the mouse cursor to the random position
+        pyautogui.moveTo(x, y, duration=movement_speed)
+
+        # Pause for a random short duration to mimic human pauses
+        time.sleep(random.uniform(0.1, 0.5))
+
+
+# Move the mouse in a human-like way
+human_like_mouse_movement()
